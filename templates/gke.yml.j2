@@ -1,0 +1,20 @@
+v2:
+  metadata:
+    title: "GKE Kubernetes"
+    url: "https://kubernetes.io"
+    hidden: false
+  login:
+    host: "localhost"
+  job:
+    adapter: "kubernetes"
+    bin: "/usr/bin/kubectl"
+    restart_policy: "OnFailure"
+    # config_file: "/home/$USER/.kube/gke-config"
+    cluster_name: "{{ cluster_name }}"
+    server:
+      endpoint: "https://{{ gke_server }}"
+      cert_authority_file: "{{ cert_authority_file }}"
+    auth:
+      type: gke
+      zone: "{{ zone }}"
+      svc_acct_file: "$HOME/.gke-creds.json"

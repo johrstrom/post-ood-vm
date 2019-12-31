@@ -1,0 +1,17 @@
+LoadModule auth_openidc_module modules/mod_auth_openidc.so
+
+OIDCProviderMetadataURL https://accounts.google.com/.well-known/openid-configuration
+OIDCClientID {{ gcp_client_id }}
+OIDCClientSecret {{ gcp_client_secret }}
+OIDCScope "{{ oidc_scope }}"
+
+# OIDCRedirectURI is a vanity URL that must point to a path protected by this module but must NOT point to any content
+OIDCRedirectURI https://{{ servername }}{{ oidc_uri }}
+OIDCCryptoPassphrase {{ oidc_passphrase }}
+
+OIDCPassIDTokenAs {{ oidc_pass_id_tokens_as }}
+OIDCPassClaimsAs {{ oidc_pass_claims_as }}
+
+# needed for refresh tokens, which I'm not sure that OOD needs
+# I believe, it only needs access_token which is fairly straight forward 
+# OIDCAuthRequestParams "access_type=offline&prompt=consent"

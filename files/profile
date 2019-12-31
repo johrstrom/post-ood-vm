@@ -1,0 +1,7 @@
+#!/bin/sh
+
+source /opt/ood/nginx_stage/etc/profile
+
+export OIDC_access_token="$OIDC_access_token"
+export LESSOPEN="LESSOPEN"
+export JO_TEST="hello? anyone home?!?!"

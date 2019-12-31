@@ -1,0 +1,69 @@
+# not really a configure thing, but OK fine, don't want to make another file
+- name: install new httpd mods
+  package:
+    name: "{{ item }}"
+  loop:
+  - httpd24-mod_auth_openidc
+  notify:
+    - restart apache httpd
+
+- name: include gke role's defaults
+  include_vars:
+    dir: ../../gke/defaults
+
+- name: find gke cluster {{ cluster_name }} details
+  gcp_container_cluster:
+    name: "{{ cluster_name }}"
+    initial_node_count: "{{ initial_node_count }}"
+    master_auth:
+      username: "{{ cluster_admin_user }}"
+      password: "{{ cluster_admin_password }}"
+    node_config:
+      machine_type: "{{ node_machine_type }}"
+      disk_size_gb: "{{ disk_size_gb }}"
+    location: "{{ zone }}"
+    project: "{{ gcp_project }}"
+    auth_kind: serviceaccount
+    service_account_file: "{{ service_account_file }}"
+    state: present
+    monitoring_service: "{{ monitoring_service }}"
+  delegate_to: localhost
+  register: gke_details
+  become: false
+
+- set_fact:
+    gke_ca_cert: "{{ gke_details | json_query('masterAuth.clusterCaCertificate') }}"
+    gke_server: "{{ gke_details | json_query('endpoint') }}"
+    cluster_dir: "/etc/ood/config/clusters.d"
+
+- name: ensure cluster directory exists
+  file:
+    path: "{{ cluster_dir }}"
+    state: directory
+
+- name: template other files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - { src: "google_auth.conf.j2", dest: "{{ apache_conf_dir }}/google_auth.conf" }
+  - { src: "gke.yml.j2", dest: "{{ cluster_dir }}/k8s.yml" }
+  - { src: "gke.crt.j2", dest: "{{ cert_authority_file }}" }
+  notify:
+  - restart apache httpd
+
+- name: chmod on google auth file
+  file:
+    path: "{{ apache_conf_dir }}/google_auth.conf"
+    owner: root
+    group: apache
+    mode: '0400'
+
+- name: copy over files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+  - { src: "gcloud_user", dest: "{{ user_map_cmd }}", mode: "0755" }
+  - { src: "profile", dest: "/etc/ood/profile", mode: "0644" }

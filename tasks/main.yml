@@ -1,0 +1,9 @@
+- include: configure.yml
+  become: true
+  tags: [ 'configure' ]
+
+- include: upgrade.yml
+  tags: [ 'upgrade' ]
+
+- include: upgrade.yml
+  tags: [ 'configure' ]

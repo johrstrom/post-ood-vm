@@ -1,0 +1,32 @@
+basic_user: jeff
+oidc_scope: "openid email profile"
+oidc_pass_refresh_token: "On"
+
+src_dir: "/home/jeff/ondemand/misc"
+
+db_local_dir: "{{ src_dir }}/ondemand/apps/dashboard"
+core_local_dir: "{{ src_dir }}/core"
+
+db_remote_dir: "/var/www/ood/apps/sys/dashboard"
+aj_remote_dir: "/var/www/ood/apps/sys/activejobs"
+core_db_remote_dir: "{{ db_remote_dir }}/vendor/bundle/ruby/2.4.0/gems/ood_core-0.9.3"
+core_aj_remote_dir: "{{ aj_remote_dir }}/vendor/bundle/ruby/2.4.0/gems/ood_core-0.9.3"
+
+
+#/var/www/ood/apps/sys/dashboard/vendor/bundle/ruby/2.4.0/gems/ood_core-0.9.3/lib/ood_core/job/
+
+files_to_move:
+- local: "{{ core_local_dir }}/lib/ood_core/job/adapters/kubernetes"
+  remote: "{{ core_db_remote_dir }}/lib/ood_core/job/adapters"
+- local: "{{ core_local_dir }}/lib/ood_core/job/adapters/kubernetes"
+  remote: "{{ core_aj_remote_dir }}/lib/ood_core/job/adapters"
+- local: "{{ core_local_dir }}/lib/ood_core/job/adapters/kubernetes.rb"
+  remote: "{{ core_db_remote_dir }}/lib/ood_core/job/adapters"
+- local: "{{ core_local_dir }}/lib/ood_core/job/adapters/kubernetes.rb"
+  remote: "{{ core_aj_remote_dir }}/lib/ood_core/job/adapters"
+- local: "{{ db_local_dir }}/app/models/batch_connect/session.rb"
+  remote: "{{ db_remote_dir }}/app/models/batch_connect/session.rb"
+- local: "/home/jeff/ondemand/dev/bc_k8s_jupyter"
+  remote: "/var/www/ood/apps/sys"
+- local: "{{ db_local_dir }}/app/controllers/application_controller.rb"
+  remote: "{{ db_remote_dir }}/app/controllers/application_controller.rb"

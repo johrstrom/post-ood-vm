@@ -1,0 +1,13 @@
+- name: "create group {{ basic_user }}"
+  group:
+    name: "{{ basic_user }}"
+    state: present
+
+- name: "create user {{ basic_user }}"
+  user:
+    name: "{{ basic_user }}"
+    comment: A very basic linux user
+    group: "{{ basic_user }}"
+
+- name: update httpd password
+  shell: "scl enable httpd24 -- htpasswd -b -c /opt/rh/httpd24/root/etc/httpd/.htpasswd {{ basic_user }} {{ basic_user }}"

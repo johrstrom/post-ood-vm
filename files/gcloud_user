@@ -1,0 +1,13 @@
+#!/bin/sh
+
+function urlsafe() { 
+
+  echo $1 | python -c "import sys; \
+      import urllib; \
+      print(urllib.unquote_plus(sys.stdin.read().rstrip()));"
+}
+
+URLSAFE=$(urlsafe $1)
+EMAIL_NAME=$( echo $URLSAFE | sed -e 's/^\(.*\)@.*/\1/' )
+#echo $EMAIL_NAME | tr '.' '-'
+echo "u$EMAIL_NAME"
